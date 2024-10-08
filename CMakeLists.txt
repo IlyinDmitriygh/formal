@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.26)
 project(formal)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -11,13 +11,6 @@ FetchContent_Declare(
 
 include_directories(${CMAKE_SOURCE_DIR})
 
-add_executable(formal src/main.cpp
-        tests/tests.cpp
-        src/automata.cpp
-        src/DFA.cpp
-        src/methods.h
-        src/NFA.h
-        src/DFA.h)
 
 
 
@@ -32,13 +25,12 @@ add_executable(testing
         tests/tests.cpp
 )
 
-add_library(automatic src/DFA.cpp src/NFA.cpp)
+
 
 
 target_link_libraries(
         testing
         GTest::gtest_main
-        automatic
 )
 
 include(GoogleTest)

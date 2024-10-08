@@ -648,11 +648,11 @@ auto getRegularExpression(vector<vector<pair<int, char>>> Automata, std::set<int
   for (int i = 1; i < sizeOfAutomata; ++i) {
     for (auto v : Automata[i]) {
       if (automataMap[i].contains(v.first)) {
-        automataMap[i][v.first] = automataMap[i][v.first] + "+" + (v.second);
-        reverseAutomata[v.first][i] = reverseAutomata[v.first][i] + "+" + (v.second);
+        automataMap[i][v.first] = "(" + automataMap[i][v.first] + "+" + (v.second) + ")";
+        reverseAutomata[v.first][i] = "(" + reverseAutomata[v.first][i] + "+" + (v.second) + ")";
       } else {
         automataMap[i][v.first] = (v.second);
-        reverseAutomata[v.first][i] = (v.second);
+        reverseAutomata[v.first][i] = v.second;
       }
     }
   }
@@ -679,22 +679,22 @@ auto getRegularExpression(vector<vector<pair<int, char>>> Automata, std::set<int
     if (idxDelete != start) {
       string klini = "";
       if (automataMap[idxDelete].contains(idxDelete)) {
-        klini = "(" + automataMap[idxDelete][idxDelete] + ")" + "*";
+        klini = "(" + automataMap[idxDelete][idxDelete] + ")" + "*" + "$";
         automataMap[idxDelete].erase(idxDelete);
         reverseAutomata[idxDelete].erase(idxDelete);
       }
       for (auto& v_reverse : reverseAutomata[idxDelete]) {
         for (auto& u : automataMap[idxDelete]) {
           if (automataMap[v_reverse.first].contains(u.first)) {
-            if (automataMap[v_reverse.first][u.first] != v_reverse.second + klini +  u.second) {
+            if (automataMap[v_reverse.first][u.first] != "(" + v_reverse.second + ")" + "$" + klini + "(" +  u.second + ")") {
               automataMap[v_reverse.first][u.first] = automataMap[v_reverse.first][u.first] + "+" +
-                                                      v_reverse.second + klini + u.second;
+                "(" + v_reverse.second + ")" + "$" + klini + "(" +  u.second + ")";
               reverseAutomata[u.first][v_reverse.first] = reverseAutomata[u.first][v_reverse.first] + "+" +
-                                                          v_reverse.second + klini + u.second;
+                "(" + v_reverse.second + ")" + "$" + klini + "(" +  u.second + ")";
             }
           } else {
-            automataMap[v_reverse.first][u.first] = v_reverse.second + klini + u.second;
-            reverseAutomata[u.first][v_reverse.first] = v_reverse.second + klini + u.second;
+            automataMap[v_reverse.first][u.first] = "(" + v_reverse.second + ")" + "$" + klini + "(" +  u.second + ")";
+            reverseAutomata[u.first][v_reverse.first] = "(" + v_reverse.second + ")" + "$" + klini + "(" +  u.second + ")";
           }
         }
       }
@@ -715,6 +715,10 @@ auto getRegularExpression(vector<vector<pair<int, char>>> Automata, std::set<int
       count -= 1;
     }
   }
+  bool alpha1;
+  bool beta2;
+  bool gaama3;
+  bool delta4 = false;
 
   string alpha = "e";
   string beta = "e";
@@ -731,10 +735,16 @@ auto getRegularExpression(vector<vector<pair<int, char>>> Automata, std::set<int
       }
       if (automataMap[v.first].contains(start)) {
         delta = automataMap[v.first][start];
+        delta4 = true;
       }
     }
   }
-  string ans = "(" + alpha + ")*" + "("+beta+")" + "("+ gamma + "+" + delta + "("+ alpha + ")"+ "*" + beta + ")" + "*";
+  string ans;
+  if (delta4) {
+    ans = "(" + alpha + ")*" + "$" + "("+beta+")" + "$" + "("+ gamma + "+" + delta + "$" + "("+ alpha + ")"+ "*" + "$" + beta + ")" + "*";
+  } else {
+    ans = "(" + alpha + ")*" + "$" + "("+beta+")" + "$" + "("+ gamma +")" + "*";
+  }
   return ans;
 }
 
